@@ -10,10 +10,7 @@ import { ChatSender } from './sender';
 import { useChatStore } from './store';
 import type { Message } from './type';
 
-function useHistory() {
-  const [searchParams] = useSearchParams();
-  const chatId = searchParams.get('chat_id') ? Number(searchParams.get('chat_id')) : null;
-
+function useHistory({ chatId }: { chatId?: number }) {
   const setMessagesBefore = useChatStore((state) => state.setMessagesBefore);
 
   const { data: res } = useGlobalRequest(
@@ -59,10 +56,19 @@ function useHistory() {
 }
 
 function HomePage() {
-  useHistory();
+  const [searchParams] = useSearchParams();
+  const chatId = searchParams.get('chat_id') ? Number(searchParams.get('chat_id')) : undefined;
+
+  const setContextDataWithField = useChatStore((state) => state.setContextDataWithField);
+
+  useHistory({ chatId });
+
+  useEffect(() => {
+    setContextDataWithField('current_chat_id', chatId);
+  }, [chatId, setContextDataWithField]);
 
   return (
-    <PageLayout className="bg-01 p-1" start={<Left />} childrenClassName="bg-white rounded-lg px-2">
+    <PageLayout className="bg-01 p-2" start={<Left />} childrenClassName="bg-white rounded-lg px-2">
       <Chat end={<ChatSender />} childrenClassName="py-2">
         <ChatMessages />
       </Chat>

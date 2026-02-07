@@ -45,6 +45,11 @@ export default ({ mode }) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
+        '/chat/message': {
+          target: 'https://xcnd.net:5003/',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/chat\/message/, '/'),
+        },
       },
     },
   });

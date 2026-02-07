@@ -11,6 +11,7 @@ interface AIData {
 type Message = ChatMessage<UserData, AIData>;
 
 interface ChatContextData {
+  current_chat_id?: number;
   health_form_id?: string;
 }
 

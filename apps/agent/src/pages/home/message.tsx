@@ -8,7 +8,10 @@ function ChatMessages() {
 
   const handleRenderMessageOfAI = useCallback((props: { message: Message }) => {
     return (
-      <div data-uuid={props.message.uuid} className="w-[960px] mx-auto max-w-full flex">
+      <div
+        data-uuid={props.message.uuid}
+        className="c-message-ai w-[960px] mx-auto max-w-full flex"
+      >
         <Markdown content={props.message.ai?.data?.content} />
       </div>
     );
@@ -16,17 +19,21 @@ function ChatMessages() {
 
   const handleRenderMessageOfUser = useCallback((props: { message: Message }) => {
     return (
-      <div data-uuid={props.message.uuid} className="w-[960px] mx-auto max-w-full flex justify-end">
-        <div className="bg-primary text-white rounded-lg px-3 py-2 ">
-          {props.message.user?.text}
-        </div>
+      <div
+        data-uuid={props.message.uuid}
+        className="c-message-user w-[960px] mx-auto max-w-full flex justify-end"
+      >
+        <div className="bg-primary text-white rounded-lg px-3 py-2">{props.message.user?.text}</div>
       </div>
     );
   }, []);
 
   const handleRenderMessageOfSystem = useCallback((props: { message: Message }) => {
     return (
-      <div data-uuid={props.message.uuid} className="w-[960px] mx-auto max-w-full flex">
+      <div
+        data-uuid={props.message.uuid}
+        className="c-message-system w-[960px] mx-auto max-w-full flex"
+      >
         <Markdown content={props.message.system?.data?.content} />
       </div>
     );

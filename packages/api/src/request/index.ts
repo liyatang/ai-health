@@ -12,11 +12,11 @@ interface ApiChatMessage {
   role: EnumMessageRole;
 }
 
-interface ApiChatMessageRequest {
-  message?: ApiChatMessage[];
+export interface ApiChatMessageRequest {
+  messages: ApiChatMessage[];
   metadata: {
     code?: EnumCodeType;
-    current_chat_id?: string;
+    current_chat_id?: number;
     device_type?: string;
     health_form_id?: string;
     screen_height?: number;
@@ -26,21 +26,21 @@ interface ApiChatMessageRequest {
   };
 }
 
-interface ApiChatSaveChatHistoryRequest {
+export interface ApiChatSaveChatHistoryRequest {
   chat_id?: string;
   csrf_token?: string;
   health_form_id?: string;
   messages: ApiChatMessage[];
   title?: string;
 }
-interface ApiChatSaveChatHistoryResponse {
+export interface ApiChatSaveChatHistoryResponse {
   chat_id: string;
 }
 
-interface ApiChatLoadChatHistoryRequest {
+export interface ApiChatLoadChatHistoryRequest {
   chat_id?: string;
 }
-interface ApiChatLoadChatHistoryResponse {
+export interface ApiChatLoadChatHistoryResponse {
   chats?: {
     created_at: string;
     health_form_id?: string;
@@ -79,8 +79,6 @@ export class Api extends HttpClient {
     });
   };
   chat = {
-    message: (param: ApiChatMessageRequest, params: RequestParams = {}) =>
-      this.requestPost('/api', param, params),
     saveChatHistory: (param: ApiChatSaveChatHistoryRequest, params: RequestParams = {}) =>
       this.requestPost<ApiChatSaveChatHistoryResponse>('/save_chat_history', param, params),
     loadChatHistory: (param?: ApiChatLoadChatHistoryRequest, params: RequestParams = {}) =>
