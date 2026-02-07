@@ -1,0 +1,12 @@
+.DS_Store
+/dist
+/build
+node_modules
+
+*.local
+.idea
+
+.yalc
+yalc.lock
+
+/apps/*/dist/
