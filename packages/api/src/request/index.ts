@@ -33,14 +33,14 @@ export interface ApiChatSaveChatHistoryRequest {
   messages: ApiChatMessage[];
   title?: string;
 }
-export interface ApiChatSaveChatHistoryResponse {
+export interface ApiChatSaveChatHistoryResponse extends ApiResponse {
   chat_id: string;
 }
 
 export interface ApiChatLoadChatHistoryRequest {
   chat_id?: string;
 }
-export interface ApiChatLoadChatHistoryResponse {
+export interface ApiChatLoadChatHistoryResponse extends ApiResponse {
   chats?: {
     created_at: string;
     health_form_id?: string;
@@ -58,9 +58,14 @@ export interface ApiChatLoadChatHistoryResponse {
   };
 }
 
+export interface ApiChatDeleteChatHistoryRequest {
+  chat_id: number;
+  csrf_token: string;
+}
+
 export class Api extends HttpClient {
   requestPost = <T = any>(path: string, param: any, params: RequestParams = {}) => {
-    return this.request<T & ApiResponse>({
+    return this.request<T>({
       path: path,
       method: 'POST',
       body: param,
@@ -70,7 +75,7 @@ export class Api extends HttpClient {
     });
   };
   requestGet = <T = any>(path: string, query: any, params: RequestParams = {}) => {
-    return this.request<T & ApiResponse>({
+    return this.request<T>({
       path: path,
       method: 'GET',
       format: 'json',
@@ -79,6 +84,8 @@ export class Api extends HttpClient {
     });
   };
   chat = {
+    deleteChatHistory: (param: ApiChatDeleteChatHistoryRequest, params: RequestParams = {}) =>
+      this.requestPost<ApiResponse>('/delete_chat_history.php', param, params),
     saveChatHistory: (param: ApiChatSaveChatHistoryRequest, params: RequestParams = {}) =>
       this.requestPost<ApiChatSaveChatHistoryResponse>('/save_chat_history', param, params),
     loadChatHistory: (param?: ApiChatLoadChatHistoryRequest, params: RequestParams = {}) =>

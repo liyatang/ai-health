@@ -68,7 +68,11 @@ function HomePage() {
   }, [chatId, setContextDataWithField]);
 
   return (
-    <PageLayout className="bg-01 p-2" start={<Left />} childrenClassName="bg-white rounded-lg px-2">
+    <PageLayout
+      className="bg-01 py-2 pr-2"
+      start={<Left />}
+      childrenClassName="bg-white rounded-lg"
+    >
       <Chat end={<ChatSender />} childrenClassName="py-2">
         <ChatMessages />
       </Chat>

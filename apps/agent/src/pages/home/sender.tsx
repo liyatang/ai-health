@@ -100,7 +100,7 @@ function ChatSender() {
   );
 
   return (
-    <div className="w-[960px] max-w-full mx-auto">
+    <div className="w-[960px] max-w-full mx-auto pb-2">
       <Sender value={senderValue} onChange={setSenderValue} onSubmit={handleSubmit} />
     </div>
   );
