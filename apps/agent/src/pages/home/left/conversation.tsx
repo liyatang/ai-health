@@ -1,56 +1,18 @@
-import { useGlobalStore } from '@/stores/global';
-import { useGlobalRequest } from '@fe-free/core';
 import { MoreOutlined } from '@fe-free/icons';
-import { healthApi } from '@lib/api';
-import { App, Dropdown } from 'antd';
+import { Dropdown } from 'antd';
 import classNames from 'classnames';
-import dayjs from 'dayjs';
-import { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-
-const TIME_GROUP_ORDER = ['今天', '昨天', '过去7天', '更早'] as const;
-
-function getTimeGroupKey(dateStr: string): (typeof TIME_GROUP_ORDER)[number] {
-  const d = dayjs(dateStr);
-  const now = dayjs();
-  if (d.isSame(now, 'day')) return '今天';
-  if (d.isSame(now.subtract(1, 'day'), 'day')) return '昨天';
-  if (d.isAfter(now.subtract(7, 'day'))) return '过去7天';
-  return '更早';
-}
-
-type ChatItem = { id: number; title: string; created_at: string };
+import { useConversationList } from './use_conversation_list';
+import { useDeleteChat } from './use_delete_chat';
+import { useRenameChat } from './use_rename_chat';
 
 function Conversation() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { modal, message } = App.useApp();
-
-  const dashboard = useGlobalStore((state) => state.dashboard);
-
   const chatId = searchParams.get('chat_id') ? Number(searchParams.get('chat_id')) : null;
 
-  const { data: res, refresh } = useGlobalRequest(async () => {
-    const response = await healthApi.chat.loadChatHistory();
-    return response.data;
-  });
-
-  const groupedChats = useMemo(() => {
-    const chats = (res?.chats ?? []) as ChatItem[];
-    const sorted = [...chats].sort(
-      (a, b) => dayjs(b.created_at).valueOf() - dayjs(a.created_at).valueOf(),
-    );
-    const map = new Map<(typeof TIME_GROUP_ORDER)[number], ChatItem[]>();
-    for (const key of TIME_GROUP_ORDER) {
-      map.set(key, []);
-    }
-    for (const chat of sorted) {
-      const key = getTimeGroupKey(chat.created_at);
-      map.get(key)?.push(chat);
-    }
-    return TIME_GROUP_ORDER.map((key) => ({ key, list: map.get(key) ?? [] })).filter(
-      (g) => g.list.length > 0,
-    );
-  }, [res?.chats]);
+  const { groupedChats, refresh } = useConversationList();
+  const { deleteChat } = useDeleteChat({ refresh });
+  const { renameChat } = useRenameChat({ refresh });
 
   return (
     <div>
@@ -82,28 +44,12 @@ function Conversation() {
                         {
                           label: '重命名',
                           key: 'rename',
-                          onClick: () => {
-                            alert('重命名');
-                          },
+                          onClick: () => renameChat(chat),
                         },
                         {
                           label: '删除',
                           key: 'delete',
-                          onClick: () => {
-                            modal.confirm({
-                              title: '删除对话',
-                              content: '确定删除该对话吗？',
-                              onOk: async () => {
-                                await healthApi.chat.deleteChatHistory({
-                                  chat_id: chat.id,
-                                  csrf_token: dashboard?.csrfToken ?? '',
-                                });
-
-                                message.success('删除成功');
-                                refresh();
-                              },
-                            });
-                          },
+                          onClick: () => deleteChat(chat),
                         },
                       ],
                     }}

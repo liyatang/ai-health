@@ -27,7 +27,7 @@ export function injectInterceptors(instance: AxiosInstance) {
     function (error) {
       const { config, status, request, response, message } = error;
 
-      throw new RequestError(message || '服务器异常', {
+      throw new RequestError(response?.data?.error || message || '服务器异常', {
         config,
         status,
         request,

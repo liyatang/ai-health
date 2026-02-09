@@ -63,6 +63,12 @@ export interface ApiChatDeleteChatHistoryRequest {
   csrf_token: string;
 }
 
+export interface ApiChatRenameChatHistoryRequest {
+  chat_id: number;
+  csrf_token: string;
+  new_title: string;
+}
+
 export class Api extends HttpClient {
   requestPost = <T = any>(path: string, param: any, params: RequestParams = {}) => {
     return this.request<T>({
@@ -84,6 +90,8 @@ export class Api extends HttpClient {
     });
   };
   chat = {
+    renameChatHistory: (param: ApiChatRenameChatHistoryRequest, params: RequestParams = {}) =>
+      this.requestPost<ApiResponse>('/rename_chat_history.php', param, params),
     deleteChatHistory: (param: ApiChatDeleteChatHistoryRequest, params: RequestParams = {}) =>
       this.requestPost<ApiResponse>('/delete_chat_history.php', param, params),
     saveChatHistory: (param: ApiChatSaveChatHistoryRequest, params: RequestParams = {}) =>
