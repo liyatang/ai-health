@@ -40,15 +40,15 @@ export default ({ mode }) => {
       open: true,
       host: true,
       proxy: {
+        '/api/chat/message': {
+          target: 'https://xcnd.net:5003/',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/chat\/message/, '/'),
+        },
         '/api': {
           target: 'https://xcnd.net/',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
-        },
-        '/chat/message': {
-          target: 'https://xcnd.net:5003/',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/chat\/message/, '/'),
         },
       },
     },

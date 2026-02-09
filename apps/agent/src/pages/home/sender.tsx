@@ -1,11 +1,11 @@
 import type { SenderProps } from '@fe-free/ai';
-import { Sender } from '@fe-free/ai';
+import { EnumChatMessageStatus, Sender } from '@fe-free/ai';
 import { EnumCodeType, EnumMessageRole } from '@lib/api';
 import type { ApiChatMessageRequest } from '@lib/api/src/request';
 import { useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useChatStore } from './store';
-import { fetchStream } from './stream';
+import { customFetchStream } from './stream';
 import type { Message } from './type';
 
 function useSendData() {
@@ -50,6 +50,7 @@ function ChatSender() {
   const senderValue = useChatStore((state) => state.senderValue);
   const setSenderValue = useChatStore((state) => state.setSenderValue);
   const addMessage = useChatStore((state) => state.addMessage);
+  const updateMessage = useChatStore((state) => state.updateMessage);
 
   const { getSendData } = useSendData();
 
@@ -57,33 +58,49 @@ function ChatSender() {
     async (value?: SenderProps['value']) => {
       const message: Message = {
         uuid: uuidv4(),
-        createdAt: new Date().getTime(),
-        updatedAt: new Date().getTime(),
+        status: EnumChatMessageStatus.PENDING,
         user: {
           text: value?.text ?? '',
+        },
+        ai: {
+          data: {
+            content: '',
+          },
         },
       };
       addMessage(message);
 
       const sendData = getSendData(message);
 
-      fetchStream('/chat/message', {
+      customFetchStream('/api/chat/message', {
         params: sendData,
         callbacks: {
           onUpdate: (chunk) => {
-            console.log('onUpdate', chunk);
+            if (chunk.message === '<stream_ended>') {
+              message.status = EnumChatMessageStatus.DONE;
+
+              updateMessage(message);
+            } else {
+              message.status = EnumChatMessageStatus.STREAMING;
+              message.ai!.data!.content += chunk.message;
+
+              updateMessage(message);
+            }
           },
           onError: (error) => {
             console.error('onError', error);
+            message.status = EnumChatMessageStatus.ERROR;
+
+            updateMessage(message);
           },
         },
       });
     },
-    [addMessage, getSendData],
+    [addMessage, getSendData, updateMessage],
   );
 
   return (
-    <div className=" w-[960px] max-w-full mx-auto">
+    <div className="w-[960px] max-w-full mx-auto">
       <Sender value={senderValue} onChange={setSenderValue} onSubmit={handleSubmit} />
     </div>
   );
