@@ -1,8 +1,11 @@
 import { PlusOutlined } from '@fe-free/icons';
 import { Avatar, Button } from 'antd';
+import { useSearchParams } from 'react-router-dom';
 import { Conversation } from './conversation';
 
 function Left() {
+  const [, setSearchParams] = useSearchParams();
+
   return (
     <div className="w-[220px] bg-01 p-2">
       <div className="flex items-center gap-2 mb-4">
@@ -12,7 +15,7 @@ function Left() {
       <Button
         type="text"
         onClick={() => {
-          alert('新建对话');
+          setSearchParams({ chat_id: '' });
         }}
         className="px-2 w-full"
       >

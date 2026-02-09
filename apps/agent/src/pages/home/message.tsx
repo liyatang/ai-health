@@ -16,8 +16,6 @@ function MessageWrap({ className, children }: { className: string; children: Rea
 function ChatMessages() {
   const messages = useChatStore((state) => state.messages);
 
-  console.log('messages', messages);
-
   const handleRenderMessageOfAI = useCallback((props: { message: Message }) => {
     if (
       props.message.status === EnumChatMessageStatus.PENDING ||

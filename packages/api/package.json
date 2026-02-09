@@ -17,7 +17,7 @@
     "@fe-free/free-scripts": "^1.3.14"
   },
   "peerDependencies": {
-    "@fe-free/core": "^4.1.46",
+    "@fe-free/core": "^4.1.47",
     "antd": "^5.20.6",
     "axios": "^1.7.9",
     "i18next": "^25.7.3",
