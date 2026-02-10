@@ -7,9 +7,9 @@ import { usePrevious, useUpdateEffect } from 'ahooks';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { HealthForm } from './health_form';
+import { Header } from './header';
 import { Left } from './left';
-import { ChatMessages } from './message';
+import { ChatMessages } from './messages';
 import { ChatSender } from './sender';
 
 function useHistory({ chatId }: { chatId?: number }) {
@@ -138,7 +138,7 @@ function HomePage() {
       start={<Left />}
       childrenClassName="bg-white rounded-lg"
     >
-      <PageLayout direction="vertical" start={<HealthForm />} startClassName="border-b border-01">
+      <PageLayout direction="vertical" start={<Header />} startClassName="border-b border-01">
         <WrapChat key={key} />
       </PageLayout>
     </PageLayout>

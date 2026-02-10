@@ -2,14 +2,44 @@ import type { Message } from '@/stores/chat';
 import { useChatStore } from '@/stores/chat';
 import { Welcome } from '@ant-design/x';
 import { EnumChatMessageStatus, Markdown, Messages } from '@fe-free/ai';
+import { Copy } from '@fe-free/core';
 import { LoadingOutlined } from '@fe-free/icons';
 import { Avatar } from 'antd';
 import classNames from 'classnames';
 import { useCallback } from 'react';
 
-function MessageWrap({ className, children }: { className: string; children: React.ReactNode }) {
+function MessageWrap({
+  className,
+  children,
+  tool,
+  role,
+}: {
+  className: string;
+  children: React.ReactNode;
+  tool?: React.ReactNode;
+  role: 'user' | 'ai' | 'system';
+}) {
   return (
-    <div className={classNames(' w-[960px] mx-auto max-w-full flex', className)}>{children}</div>
+    <div
+      className={classNames(
+        'w-[960px] mx-auto max-w-full flex flex-col group',
+        {
+          'items-end': role === 'user',
+        },
+        className,
+      )}
+    >
+      {children}
+      {tool && (
+        <div
+          className={classNames('mt-1', {
+            'invisible group-hover:visible': role === 'user',
+          })}
+        >
+          {tool}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -22,7 +52,7 @@ function ChatMessages() {
       (props.message.status === EnumChatMessageStatus.STREAMING && !props.message.ai?.data?.content)
     ) {
       return (
-        <MessageWrap data-uuid={props.message.uuid} className="c-message-system">
+        <MessageWrap data-uuid={props.message.uuid} className="c-message-ai" role="ai">
           <div>
             <LoadingOutlined spin /> 正在思考...
           </div>
@@ -31,18 +61,33 @@ function ChatMessages() {
     }
 
     return (
-      <div
+      <MessageWrap
         data-uuid={props.message.uuid}
-        className="c-message-ai w-[960px] mx-auto max-w-full flex"
+        className="c-message-ai"
+        role="ai"
+        tool={
+          <div>
+            <Copy showIcon value={props.message.ai?.data?.content ?? ''} />
+          </div>
+        }
       >
         <Markdown content={props.message.ai?.data?.content} />
-      </div>
+      </MessageWrap>
     );
   }, []);
 
   const handleRenderMessageOfUser = useCallback((props: { message: Message }) => {
     return (
-      <MessageWrap data-uuid={props.message.uuid} className="c-message-user justify-end">
+      <MessageWrap
+        data-uuid={props.message.uuid}
+        className="c-message-user"
+        role="user"
+        tool={
+          <div>
+            <Copy showIcon value={props.message.user?.text ?? ''} />
+          </div>
+        }
+      >
         <div className="bg-primary text-white rounded-lg px-3 py-2">{props.message.user?.text}</div>
       </MessageWrap>
     );
@@ -50,15 +95,11 @@ function ChatMessages() {
 
   const handleRenderMessageOfSystem = useCallback((props: { message: Message }) => {
     return (
-      <MessageWrap data-uuid={props.message.uuid} className="c-message-system">
+      <MessageWrap data-uuid={props.message.uuid} className="c-message-system" role="system">
         <Markdown content={props.message.system?.data?.content} />
       </MessageWrap>
     );
   }, []);
-
-  // const newMessages = useMemo(() => {
-  //   return [welcomeMessage, ...(messages ?? [])];
-  // }, [messages]);
 
   if (messages.length === 0) {
     return (

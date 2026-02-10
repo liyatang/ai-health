@@ -37,6 +37,22 @@ const welcomeMessage: Message = {
 
 const { useChatStore, useChatStoreComputed } = createChatStore<UserData, AIData, ChatContextData>();
 
+function chatMessagesToApiChatMessages(messages: Message[]): ApiChatMessageRequest['messages'] {
+  const apiMessages: ApiChatMessageRequest['messages'] = [];
+  messages.forEach((message) => {
+    apiMessages.push({
+      role: EnumMessageRole.USER,
+      content: message.user?.text ?? '',
+    });
+    apiMessages.push({
+      role: EnumMessageRole.ASSISTANT,
+      content: message.ai?.data?.content ?? '',
+    });
+  });
+
+  return apiMessages;
+}
+
 function useSendChatMessage({ onChatIdChange }) {
   const messages = useChatStore((state) => state.messages);
   const contextData = useChatStore((state) => state.contextData);
@@ -60,17 +76,7 @@ function useSendChatMessage({ onChatIdChange }) {
       };
       addMessage(message);
 
-      const sendMessages: ApiChatMessageRequest['messages'] = [];
-      messages.forEach((message) => {
-        sendMessages.push({
-          role: EnumMessageRole.USER,
-          content: message.user?.text ?? '',
-        });
-        sendMessages.push({
-          role: EnumMessageRole.ASSISTANT,
-          content: message.ai?.data?.content ?? '',
-        });
-      });
+      const sendMessages = chatMessagesToApiChatMessages(messages);
       sendMessages.push({
         role: EnumMessageRole.USER,
         content: message.user?.text ?? '',
@@ -146,5 +152,11 @@ function useSendChatMessage({ onChatIdChange }) {
   };
 }
 
-export { useChatStore, useChatStoreComputed, useSendChatMessage, welcomeMessage };
+export {
+  chatMessagesToApiChatMessages,
+  useChatStore,
+  useChatStoreComputed,
+  useSendChatMessage,
+  welcomeMessage,
+};
 export type { ChatContextData, Message };

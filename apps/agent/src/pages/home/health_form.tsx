@@ -10,7 +10,7 @@ function HealthForm() {
   const { modal } = App.useApp();
 
   return (
-    <div className="px-4 flex items-center h-[50px] gap-2">
+    <div className="flex items-center">
       <Select
         value={contextData?.health_form_id}
         onChange={(value) => {
@@ -27,7 +27,7 @@ function HealthForm() {
             value: item.id,
           };
         })}
-        className="min-w-[130px]"
+        className="min-w-[100px]"
         placeholder="请选择健康调查表"
         popupMatchSelectWidth={false}
         allowClear
