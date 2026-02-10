@@ -97,3 +97,51 @@ export function TextCodeType(props: { value?: EnumCodeType | string } & TagProps
 
   return <>{item?.text ?? props.value}</>;
 }
+
+// --- Gender
+
+export enum EnumGender {
+  Male = '男',
+  Female = '女',
+}
+
+export const valueEnumGender = {
+  [EnumGender.Male]: {
+    text: t('enum.Gender.Male', '男'),
+    value: '男',
+  },
+  [EnumGender.Female]: {
+    text: t('enum.Gender.Female', '女'),
+    value: '女',
+  },
+};
+
+export const listGender = Object.keys(valueEnumGender).map((key) => {
+  const item = valueEnumGender[key];
+
+  return {
+    value: item.value !== undefined ? item.value : key,
+    label: item.text,
+    originData: item.data,
+  };
+});
+
+export function TagGender(props: { value?: EnumGender | string } & TagProps) {
+  const item = props.value && valueEnumGender[props.value];
+
+  if (item) {
+    return (
+      <Tag color={item.color} {...props}>
+        {item.text}
+      </Tag>
+    );
+  }
+
+  return null;
+}
+
+export function TextGender(props: { value?: EnumGender | string } & TagProps) {
+  const item = props.value && valueEnumGender[props.value];
+
+  return <>{item?.text ?? props.value}</>;
+}

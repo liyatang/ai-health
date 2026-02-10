@@ -19,6 +19,16 @@ const enums = {
       text: '付费',
     },
   },
+  Gender: {
+    Male: {
+      value: '男',
+      text: '男',
+    },
+    Female: {
+      value: '女',
+      text: '女',
+    },
+  },
 };
 
 module.exports = { enums };

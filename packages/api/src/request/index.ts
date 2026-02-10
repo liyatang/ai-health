@@ -1,4 +1,4 @@
-import type { EnumCodeType, EnumMessageRole } from '../code/enums';
+import type { EnumCodeType, EnumGender, EnumMessageRole } from '../code/enums';
 import type { RequestParams } from './helper';
 import { ContentType, HttpClient } from './helper';
 
@@ -12,7 +12,7 @@ export interface ApiChatMessage {
   role: EnumMessageRole;
 }
 
-export interface ApiSession {
+export interface ApiChatSession {
   created_at: string;
   health_form_id?: string;
   id: number;
@@ -21,6 +21,16 @@ export interface ApiSession {
   // 获取历史消息才有
   messages?: ApiChatMessage[];
 }
+
+export interface ApiHealthForm {
+  id: number;
+  name: string;
+  gender: EnumGender;
+  created_at: string;
+  [key: string]: any;
+}
+
+//*** 分割线，以下 request response *** */
 
 export interface ApiChatMessageRequest {
   messages: ApiChatMessage[];
@@ -51,8 +61,8 @@ export interface ApiChatLoadChatHistoryRequest {
   chat_id?: number;
 }
 export interface ApiChatLoadChatHistoryResponse extends ApiResponse {
-  chats?: ApiSession[];
-  chat?: ApiSession;
+  chats?: ApiChatSession[];
+  chat?: ApiChatSession;
 }
 
 export interface ApiChatDeleteChatHistoryRequest {

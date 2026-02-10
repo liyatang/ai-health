@@ -1,16 +1,22 @@
+import type { ApiHealthForm } from '@lib/api/src/request';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface GlobalState {
   init: boolean;
   doInit: (silent?: boolean) => Promise<void>;
-  menuCollapse: boolean;
-  setMenuCollapse: (collapse?: boolean) => void;
-  dashboard?: {
-    csrfToken?: string;
+
+  csrfToken?: string;
+  healthForms?: ApiHealthForm[];
+  userInfo?: {
+    id: string;
+    name: string;
   };
   /** 从 dashboard HTML 中解析值 */
   fetchDashboard: () => Promise<void>;
+
+  menuCollapse: boolean;
+  setMenuCollapse: (collapse?: boolean) => void;
 }
 
 const useGlobalStore = create<GlobalState>()(
@@ -19,7 +25,6 @@ const useGlobalStore = create<GlobalState>()(
       init: false,
       doInit: async () => {
         await get().fetchDashboard();
-        console.log('dashboard', get().dashboard);
         set({ init: true });
       },
 
@@ -35,9 +40,35 @@ const useGlobalStore = create<GlobalState>()(
       fetchDashboard: async (): Promise<void> => {
         const response = await fetch('/api/dashboard.php');
         const html = await response.text();
-        // 匹配 window.csrfToken = "xxx" 或 window.csrfToken = 'xxx'
-        const match = html.match(/window\.csrfToken\s*=\s*["']([^"']+)["']/);
-        set({ dashboard: { csrfToken: match ? match[1] : undefined } });
+
+        return new Promise<void>((resolve) => {
+          const iframe = document.createElement('iframe');
+          iframe.srcdoc = html;
+          iframe.style.display = 'none';
+          document.body.appendChild(iframe);
+
+          iframe.onload = () => {
+            set({
+              userInfo: {
+                // @ts-ignore
+                id: iframe.contentWindow?.userId,
+                // @ts-ignore
+                name: iframe.contentWindow?.userName,
+              },
+              // @ts-ignore
+              csrfToken: iframe.contentWindow?.csrfToken,
+              // @ts-ignore
+              healthForms: iframe.contentWindow?.phpOptions,
+            });
+
+            iframe.remove();
+
+            resolve();
+          };
+          iframe.onerror = () => {
+            resolve();
+          };
+        });
       },
     }),
     {

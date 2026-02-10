@@ -1,12 +1,12 @@
 import { healthApi } from '@lib/api';
-import type { ApiSession } from '@lib/api/src/request';
+import type { ApiChatSession } from '@lib/api/src/request';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { create } from 'zustand';
 
 interface ConversationStore {
-  conversations?: ApiSession[];
-  setConversations: (conversations: ApiSession[]) => void;
+  conversations?: ApiChatSession[];
+  setConversations: (conversations: ApiChatSession[]) => void;
   fetchData: () => void;
 }
 const useConversationStore = create<ConversationStore>((set) => ({
@@ -36,7 +36,7 @@ function useConversationStoreComputed() {
     const sorted = [...(conversations ?? [])].sort(
       (a, b) => dayjs(b.created_at).valueOf() - dayjs(a.created_at).valueOf(),
     );
-    const map = new Map<(typeof TIME_GROUP_ORDER)[number], ApiSession[]>();
+    const map = new Map<(typeof TIME_GROUP_ORDER)[number], ApiChatSession[]>();
     for (const key of TIME_GROUP_ORDER) {
       map.set(key, []);
     }

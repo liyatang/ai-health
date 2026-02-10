@@ -68,24 +68,32 @@ function WrapChat() {
   const [init, setInit] = useState(false);
 
   const reset = useChatStore((state) => state.reset);
+  const setContextData = useChatStore((state) => state.setContextData);
   const setContextDataWithField = useChatStore((state) => state.setContextDataWithField);
 
   const { refreshAsync: refreshHistoryAsync } = useHistory({ chatId });
 
   useEffect(() => {
-    async function init() {
+    (async function init() {
+      // 重置
       reset();
-      setContextDataWithField('current_chat_id', chatId);
 
+      // 设置 contextData
+      setContextData({
+        current_chat_id: chatId,
+      });
+
+      // 加载好历史记录
       await refreshHistoryAsync();
 
+      // 初始化完成
       setInit(true);
-    }
-
-    init();
+    })();
   }, []);
 
   useUpdateEffect(() => {
+    // 目前只有新建的情况。
+    // 如果当前对话id有变化，设置 contextData
     setContextDataWithField('current_chat_id', chatId);
   }, [chatId, setContextDataWithField]);
 
@@ -103,19 +111,22 @@ function WrapChat() {
 function HomePage() {
   const [searchParams] = useSearchParams();
   const chatId = searchParams.get('chat_id') ? Number(searchParams.get('chat_id')) : undefined;
+  const isAdd = searchParams.get('isAdd') === '1' ? true : false;
 
   const preChatId = usePrevious(chatId);
   const [key, setKey] = useState(0);
 
   useEffect(() => {
-    // 如果当前对话id为空，且新对话id与旧对话id不同，为新建情况
-    if (!preChatId && chatId !== preChatId) {
-      // not change
-    } else if (preChatId !== chatId) {
-      // change key
-      setKey((key) => key + 1);
+    if (chatId !== preChatId) {
+      // 新建情况不管
+      if (isAdd) {
+        // nothing
+      } else {
+        // change key
+        setKey((key) => key + 1);
+      }
     }
-  }, [chatId, preChatId]);
+  }, [chatId, preChatId, isAdd]);
 
   return (
     <PageLayout

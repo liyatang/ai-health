@@ -1,19 +1,19 @@
 import { useGlobalStore } from '@/stores/global';
 import { healthApi } from '@lib/api';
-import type { ApiSession } from '@lib/api/src/request';
+import type { ApiChatSession } from '@lib/api/src/request';
 import { App, Input } from 'antd';
 import { useCallback, useRef } from 'react';
 
 function useRenameChat(options: { refresh: () => void }): {
-  renameChat: (chat: ApiSession) => void;
+  renameChat: (chat: ApiChatSession) => void;
 } {
   const { refresh } = options;
   const { modal, message } = App.useApp();
-  const dashboard = useGlobalStore((state) => state.dashboard);
+  const csrfToken = useGlobalStore((state) => state.csrfToken);
   const titleRef = useRef({ value: '' });
 
   const renameChat = useCallback(
-    (chat: ApiSession) => {
+    (chat: ApiChatSession) => {
       titleRef.current.value = chat.title;
       modal.confirm({
         title: '重命名',
@@ -34,7 +34,7 @@ function useRenameChat(options: { refresh: () => void }): {
           }
           await healthApi.chat.renameChatHistory({
             chat_id: chat.id,
-            csrf_token: dashboard?.csrfToken ?? '',
+            csrf_token: csrfToken ?? '',
             new_title: newTitle,
           });
           message.success('重命名成功');
@@ -42,7 +42,7 @@ function useRenameChat(options: { refresh: () => void }): {
         },
       });
     },
-    [modal, message, dashboard?.csrfToken, refresh],
+    [modal, message, csrfToken, refresh],
   );
 
   return { renameChat };

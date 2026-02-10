@@ -1,18 +1,18 @@
 import { useGlobalStore } from '@/stores/global';
 import { healthApi } from '@lib/api';
-import type { ApiSession } from '@lib/api/src/request';
+import type { ApiChatSession } from '@lib/api/src/request';
 import { App } from 'antd';
 import { useCallback } from 'react';
 
 function useDeleteChat(options: { refresh: () => void }): {
-  deleteChat: (chat: ApiSession) => Promise<boolean>;
+  deleteChat: (chat: ApiChatSession) => Promise<boolean>;
 } {
   const { refresh } = options;
   const { modal, message } = App.useApp();
-  const dashboard = useGlobalStore((state) => state.dashboard);
+  const csrfToken = useGlobalStore((state) => state.csrfToken);
 
   const deleteChat = useCallback(
-    async (chat: ApiSession) => {
+    async (chat: ApiChatSession) => {
       return new Promise<boolean>((resolve) => {
         modal.confirm({
           title: '删除对话',
@@ -20,7 +20,7 @@ function useDeleteChat(options: { refresh: () => void }): {
           onOk: async () => {
             await healthApi.chat.deleteChatHistory({
               chat_id: chat.id,
-              csrf_token: dashboard?.csrfToken ?? '',
+              csrf_token: csrfToken ?? '',
             });
             message.success('删除成功');
             refresh();
@@ -33,7 +33,7 @@ function useDeleteChat(options: { refresh: () => void }): {
         });
       });
     },
-    [modal, message, dashboard?.csrfToken, refresh],
+    [modal, message, csrfToken, refresh],
   );
 
   return { deleteChat };

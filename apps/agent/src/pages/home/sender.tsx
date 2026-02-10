@@ -18,8 +18,8 @@ function ChatSender() {
 
       // 如果当前对话id与新对话id不同，为新建情况
       if (contextData?.current_chat_id !== chatId) {
-        // 更新 url
-        setSearchParams({ chat_id: chatId.toString() });
+        // 更新 url，新建情况标注 isAdd
+        setSearchParams({ chat_id: chatId.toString(), isAdd: '1' });
 
         fetchConversation();
       }

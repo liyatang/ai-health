@@ -28,7 +28,7 @@ function useSendChatMessage({ onChatIdChange }) {
   const contextData = useChatStore((state) => state.contextData);
   const addMessage = useChatStore((state) => state.addMessage);
   const updateMessage = useChatStore((state) => state.updateMessage);
-  const dashboard = useGlobalStore((state) => state.dashboard);
+  const csrfToken = useGlobalStore((state) => state.csrfToken);
 
   const send = useCallback(
     async (value?: SenderProps['value']) => {
@@ -78,7 +78,7 @@ function useSendChatMessage({ onChatIdChange }) {
 
         const res = await healthApi.chat.saveChatHistory({
           chat_id: contextData?.current_chat_id,
-          csrf_token: dashboard?.csrfToken ?? '',
+          csrf_token: csrfToken ?? '',
           health_form_id: contextData?.health_form_id,
           messages: sendMessages,
           // 用第一条消息作为标题
@@ -120,7 +120,7 @@ function useSendChatMessage({ onChatIdChange }) {
       addMessage,
       contextData?.current_chat_id,
       contextData?.health_form_id,
-      dashboard?.csrfToken,
+      csrfToken,
       messages,
       onChatIdChange,
       updateMessage,
