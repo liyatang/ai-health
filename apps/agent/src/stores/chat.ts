@@ -1,3 +1,4 @@
+import { customFetchStream } from '@/common/stream';
 import { useGlobalStore } from '@/stores/global';
 import type { SenderProps } from '@fe-free/ai';
 import { createChatStore, EnumChatMessageStatus, EnumChatMessageType } from '@fe-free/ai';
@@ -5,8 +6,7 @@ import { EnumCodeType, EnumMessageRole, healthApi } from '@lib/api';
 import type { ApiChatMessageRequest } from '@lib/api/src/request';
 import { useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { customFetchStream } from '../stream';
-import type { AIData, ChatContextData, Message, UserData } from '../type';
+import type { AIData, ChatContextData, Message, UserData } from './types';
 
 const welcomeMessage: Message = {
   uuid: uuidv4(),

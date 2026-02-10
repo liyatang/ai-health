@@ -1,8 +1,8 @@
+import { useChatStore, useSendChatMessage } from '@/stores/chat';
+import { useConversationStore } from '@/stores/conversation';
 import { Sender } from '@fe-free/ai';
 import { useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useChatStore, useSendChatMessage } from './store/chat';
-import { useConversationStore } from './store/conversation';
 
 function ChatSender() {
   const senderValue = useChatStore((state) => state.senderValue);

@@ -1,9 +1,9 @@
+import { useConversationStore, useConversationStoreComputed } from '@/stores/conversation';
 import { MoreOutlined } from '@fe-free/icons';
 import { Dropdown } from 'antd';
 import classNames from 'classnames';
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useConversationStore, useConversationStoreComputed } from '../store/conversation';
 import { useDeleteChat } from './use_delete_chat';
 import { useRenameChat } from './use_rename_chat';
 

@@ -1,3 +1,5 @@
+import { useChatStore } from '@/stores/chat';
+import type { Message } from '@/stores/types';
 import { Chat } from '@fe-free/ai';
 import { PageLayout, useGlobalRequest } from '@fe-free/core';
 import { EnumMessageRole, healthApi } from '@lib/api';
@@ -8,8 +10,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Left } from './left';
 import { ChatMessages } from './message';
 import { ChatSender } from './sender';
-import { useChatStore } from './store/chat';
-import type { Message } from './type';
 
 function useHistory({ chatId }: { chatId?: number }) {
   const setMessagesBefore = useChatStore((state) => state.setMessagesBefore);
