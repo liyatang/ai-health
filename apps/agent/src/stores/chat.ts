@@ -1,12 +1,26 @@
 import { customFetchStream } from '@/common/stream';
 import { useGlobalStore } from '@/stores/global';
-import type { SenderProps } from '@fe-free/ai';
-import { createChatStore, EnumChatMessageStatus, EnumChatMessageType } from '@fe-free/ai';
+import type { ChatMessage, SenderProps } from '@fe-free/ai';
+import { EnumChatMessageStatus, EnumChatMessageType, createChatStore } from '@fe-free/ai';
 import { EnumCodeType, EnumMessageRole, healthApi } from '@lib/api';
 import type { ApiChatMessageRequest } from '@lib/api/src/request';
 import { useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import type { AIData, ChatContextData, Message, UserData } from './types';
+
+interface UserData {
+  text?: string;
+}
+
+interface AIData {
+  content?: string;
+}
+
+type Message = ChatMessage<UserData, AIData>;
+
+interface ChatContextData {
+  current_chat_id?: number;
+  health_form_id?: string;
+}
 
 const welcomeMessage: Message = {
   uuid: uuidv4(),
@@ -133,3 +147,4 @@ function useSendChatMessage({ onChatIdChange }) {
 }
 
 export { useChatStore, useChatStoreComputed, useSendChatMessage, welcomeMessage };
+export type { ChatContextData, Message };

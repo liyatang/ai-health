@@ -1,5 +1,5 @@
+import type { Message } from '@/stores/chat';
 import { useChatStore } from '@/stores/chat';
-import type { Message } from '@/stores/types';
 import { Chat } from '@fe-free/ai';
 import { PageLayout, useGlobalRequest } from '@fe-free/core';
 import { EnumMessageRole, healthApi } from '@lib/api';
@@ -7,6 +7,7 @@ import { usePrevious, useUpdateEffect } from 'ahooks';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import { HealthForm } from './health_form';
 import { Left } from './left';
 import { ChatMessages } from './message';
 import { ChatSender } from './sender';
@@ -78,13 +79,16 @@ function WrapChat() {
       // 重置
       reset();
 
+      // 加载好历史记录
+      const res = await refreshHistoryAsync();
+
       // 设置 contextData
       setContextData({
         current_chat_id: chatId,
+        health_form_id: res.chat?.health_form_id,
       });
 
-      // 加载好历史记录
-      await refreshHistoryAsync();
+      console.log('res', res);
 
       // 初始化完成
       setInit(true);
@@ -134,7 +138,9 @@ function HomePage() {
       start={<Left />}
       childrenClassName="bg-white rounded-lg"
     >
-      <WrapChat key={key} />
+      <PageLayout direction="vertical" start={<HealthForm />} startClassName="border-b border-01">
+        <WrapChat key={key} />
+      </PageLayout>
     </PageLayout>
   );
 }

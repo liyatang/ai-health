@@ -34,14 +34,14 @@ function useConversationStoreComputed() {
 
   const groupedConversations = useMemo(() => {
     const sorted = [...(conversations ?? [])].sort(
-      (a, b) => dayjs(b.created_at).valueOf() - dayjs(a.created_at).valueOf(),
+      (a, b) => dayjs(b.updated_at).valueOf() - dayjs(a.updated_at).valueOf(),
     );
     const map = new Map<(typeof TIME_GROUP_ORDER)[number], ApiChatSession[]>();
     for (const key of TIME_GROUP_ORDER) {
       map.set(key, []);
     }
     for (const chat of sorted) {
-      const key = getTimeGroupKey(chat.created_at);
+      const key = getTimeGroupKey(chat.updated_at);
       map.get(key)?.push(chat);
     }
     return TIME_GROUP_ORDER.map((key) => ({ key, list: map.get(key) ?? [] })).filter(

@@ -7,6 +7,7 @@ interface GlobalState {
   doInit: (silent?: boolean) => Promise<void>;
 
   csrfToken?: string;
+  currentHealthFormId?: string;
   healthForms?: ApiHealthForm[];
   userInfo?: {
     id: string;
@@ -58,7 +59,11 @@ const useGlobalStore = create<GlobalState>()(
               // @ts-ignore
               csrfToken: iframe.contentWindow?.csrfToken,
               // @ts-ignore
-              healthForms: iframe.contentWindow?.phpOptions,
+              healthForms: iframe.contentWindow?.phpOptions?.map((item) => ({
+                ...item,
+                // 和其他地方保持一致，转字符串
+                id: item.id.toString(),
+              })),
             });
 
             iframe.remove();

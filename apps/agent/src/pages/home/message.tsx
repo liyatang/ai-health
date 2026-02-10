@@ -1,5 +1,5 @@
+import type { Message } from '@/stores/chat';
 import { useChatStore } from '@/stores/chat';
-import type { Message } from '@/stores/types';
 import { Welcome } from '@ant-design/x';
 import { EnumChatMessageStatus, Markdown, Messages } from '@fe-free/ai';
 import { LoadingOutlined } from '@fe-free/icons';

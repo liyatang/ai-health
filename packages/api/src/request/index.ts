@@ -23,7 +23,7 @@ export interface ApiChatSession {
 }
 
 export interface ApiHealthForm {
-  id: number;
+  id: string;
   name: string;
   gender: EnumGender;
   created_at: string;
