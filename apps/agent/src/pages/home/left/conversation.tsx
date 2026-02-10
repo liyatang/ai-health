@@ -61,13 +61,18 @@ function Conversation() {
                         {
                           label: '删除',
                           key: 'delete',
-                          onClick: () => {
-                            deleteChat(chat);
+                          onClick: async () => {
+                            const result = await deleteChat(chat);
+                            if (result) {
+                              // 如果删除的是当前的对话，则清空 url 中的 chat_id
+                              if (chatId === chat.id) {
+                                setSearchParams({ chat_id: '' });
+                              }
+                            }
                           },
                         },
                       ],
                     }}
-                    placement="bottomRight"
                   >
                     <MoreOutlined />
                   </Dropdown>
