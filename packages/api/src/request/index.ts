@@ -7,9 +7,19 @@ interface ApiResponse {
   error?: string;
 }
 
-interface ApiChatMessage {
+export interface ApiChatMessage {
   content: string;
   role: EnumMessageRole;
+}
+
+export interface ApiSession {
+  created_at: string;
+  health_form_id?: string;
+  id: number;
+  title: string;
+  updated_at: string;
+  // 获取历史消息才有
+  messages?: ApiChatMessage[];
 }
 
 export interface ApiChatMessageRequest {
@@ -27,35 +37,22 @@ export interface ApiChatMessageRequest {
 }
 
 export interface ApiChatSaveChatHistoryRequest {
-  chat_id?: string;
+  chat_id?: number;
   csrf_token?: string;
   health_form_id?: string;
   messages: ApiChatMessage[];
   title?: string;
 }
 export interface ApiChatSaveChatHistoryResponse extends ApiResponse {
-  chat_id: string;
+  chat_id: number;
 }
 
 export interface ApiChatLoadChatHistoryRequest {
-  chat_id?: string;
+  chat_id?: number;
 }
 export interface ApiChatLoadChatHistoryResponse extends ApiResponse {
-  chats?: {
-    created_at: string;
-    health_form_id?: string;
-    id: number;
-    title: string;
-    updated_at: string;
-  }[];
-  chat?: {
-    created_at: string;
-    health_form_id?: string;
-    id: number;
-    title: string;
-    updated_at: string;
-    messages: ApiChatMessage[];
-  };
+  chats?: ApiSession[];
+  chat?: ApiSession;
 }
 
 export interface ApiChatDeleteChatHistoryRequest {
@@ -95,7 +92,7 @@ export class Api extends HttpClient {
     deleteChatHistory: (param: ApiChatDeleteChatHistoryRequest, params: RequestParams = {}) =>
       this.requestPost<ApiResponse>('/delete_chat_history.php', param, params),
     saveChatHistory: (param: ApiChatSaveChatHistoryRequest, params: RequestParams = {}) =>
-      this.requestPost<ApiChatSaveChatHistoryResponse>('/save_chat_history', param, params),
+      this.requestPost<ApiChatSaveChatHistoryResponse>('/save_chat_history.php', param, params),
     loadChatHistory: (param?: ApiChatLoadChatHistoryRequest, params: RequestParams = {}) =>
       this.requestGet<ApiChatLoadChatHistoryResponse>('/load_chat_history.php', param, params),
   };

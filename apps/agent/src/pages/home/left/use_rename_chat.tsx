@@ -1,17 +1,19 @@
 import { useGlobalStore } from '@/stores/global';
 import { healthApi } from '@lib/api';
+import type { ApiSession } from '@lib/api/src/request';
 import { App, Input } from 'antd';
 import { useCallback, useRef } from 'react';
-import type { ChatItem } from './use_conversation_list';
 
-function useRenameChat(options: { refresh: () => void }): { renameChat: (chat: ChatItem) => void } {
+function useRenameChat(options: { refresh: () => void }): {
+  renameChat: (chat: ApiSession) => void;
+} {
   const { refresh } = options;
   const { modal, message } = App.useApp();
   const dashboard = useGlobalStore((state) => state.dashboard);
   const titleRef = useRef({ value: '' });
 
   const renameChat = useCallback(
-    (chat: ChatItem) => {
+    (chat: ApiSession) => {
       titleRef.current.value = chat.title;
       modal.confirm({
         title: '重命名',

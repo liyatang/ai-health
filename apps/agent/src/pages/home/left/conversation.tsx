@@ -1,8 +1,9 @@
 import { MoreOutlined } from '@fe-free/icons';
 import { Dropdown } from 'antd';
 import classNames from 'classnames';
+import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useConversationList } from './use_conversation_list';
+import { useConversationStore, useConversationStoreComputed } from '../store/conversation';
 import { useDeleteChat } from './use_delete_chat';
 import { useRenameChat } from './use_rename_chat';
 
@@ -10,15 +11,21 @@ function Conversation() {
   const [searchParams, setSearchParams] = useSearchParams();
   const chatId = searchParams.get('chat_id') ? Number(searchParams.get('chat_id')) : null;
 
-  const { groupedChats, refresh } = useConversationList();
+  const { groupedConversations } = useConversationStoreComputed();
+  const { fetchData: refresh } = useConversationStore();
+
   const { deleteChat } = useDeleteChat({ refresh });
   const { renameChat } = useRenameChat({ refresh });
+
+  useEffect(() => {
+    refresh();
+  }, []);
 
   return (
     <div>
       <div className="p-2 text-xs text-03">所有对话</div>
       <div className="flex flex-col">
-        {groupedChats.map(({ key, list }) => (
+        {groupedConversations.map(({ key, list }) => (
           <div key={key}>
             <div className="px-2 pt-3 pb-1 text-xs text-03">{key}</div>
             {list.map((chat) => (
@@ -37,19 +44,26 @@ function Conversation() {
                 <div className="flex-1">
                   <div className="truncate">{chat.title}</div>
                 </div>
-                <div className="hidden group-hover:block">
+                <div
+                  className="hidden group-hover:block"
+                  onClick={(event) => event.stopPropagation()}
+                >
                   <Dropdown
                     menu={{
                       items: [
                         {
                           label: '重命名',
                           key: 'rename',
-                          onClick: () => renameChat(chat),
+                          onClick: () => {
+                            renameChat(chat);
+                          },
                         },
                         {
                           label: '删除',
                           key: 'delete',
-                          onClick: () => deleteChat(chat),
+                          onClick: () => {
+                            deleteChat(chat);
+                          },
                         },
                       ],
                     }}

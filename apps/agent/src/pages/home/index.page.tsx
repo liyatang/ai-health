@@ -2,28 +2,28 @@ import { Chat } from '@fe-free/ai';
 import { PageLayout, useGlobalRequest } from '@fe-free/core';
 import { EnumMessageRole, healthApi } from '@lib/api';
 import { usePrevious, useUpdateEffect } from 'ahooks';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { Left } from './left';
 import { ChatMessages } from './message';
 import { ChatSender } from './sender';
-import { useChatStore } from './store';
+import { useChatStore } from './store/chat';
 import type { Message } from './type';
 
 function useHistory({ chatId }: { chatId?: number }) {
   const setMessagesBefore = useChatStore((state) => state.setMessagesBefore);
 
-  const { data: res } = useGlobalRequest(
+  const { data: res, refreshAsync } = useGlobalRequest(
     async () => {
       const response = await healthApi.chat.loadChatHistory(
-        chatId ? { chat_id: chatId.toString() } : undefined,
+        chatId ? { chat_id: chatId } : undefined,
       );
       return response.data;
     },
     {
       refreshDeps: [chatId],
-      manual: !chatId,
+      manual: true,
     },
   );
 
@@ -55,6 +55,10 @@ function useHistory({ chatId }: { chatId?: number }) {
 
     setMessagesBefore(messages);
   }, [res, setMessagesBefore]);
+
+  return {
+    refreshAsync,
+  };
 }
 
 function WrapChat() {
@@ -66,29 +70,31 @@ function WrapChat() {
   const reset = useChatStore((state) => state.reset);
   const setContextDataWithField = useChatStore((state) => state.setContextDataWithField);
 
-  useHistory({ chatId });
+  const { refreshAsync: refreshHistoryAsync } = useHistory({ chatId });
 
   useEffect(() => {
-    reset();
-    setContextDataWithField('current_chat_id', chatId);
+    async function init() {
+      reset();
+      setContextDataWithField('current_chat_id', chatId);
 
-    setInit(true);
+      await refreshHistoryAsync();
+
+      setInit(true);
+    }
+
+    init();
   }, []);
 
   useUpdateEffect(() => {
     setContextDataWithField('current_chat_id', chatId);
   }, [chatId, setContextDataWithField]);
 
-  const chatKey = useMemo(() => {
-    return chatId;
-  }, [chatId]);
-
   if (!init) {
     return null;
   }
 
   return (
-    <Chat key={chatKey} end={<ChatSender />} childrenClassName="py-2">
+    <Chat end={<ChatSender />} childrenClassName="py-2">
       <ChatMessages />
     </Chat>
   );
@@ -102,9 +108,11 @@ function HomePage() {
   const [key, setKey] = useState(0);
 
   useEffect(() => {
+    // 如果当前对话id为空，且新对话id与旧对话id不同，为新建情况
     if (!preChatId && chatId !== preChatId) {
       // not change
     } else if (preChatId !== chatId) {
+      // change key
       setKey((key) => key + 1);
     }
   }, [chatId, preChatId]);

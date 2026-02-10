@@ -4,7 +4,7 @@ import { LoadingOutlined } from '@fe-free/icons';
 import { Avatar } from 'antd';
 import classNames from 'classnames';
 import { useCallback } from 'react';
-import { useChatStore } from './store';
+import { useChatStore } from './store/chat';
 import type { Message } from './type';
 
 function MessageWrap({ className, children }: { className: string; children: React.ReactNode }) {

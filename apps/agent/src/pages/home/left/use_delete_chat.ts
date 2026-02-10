@@ -1,16 +1,18 @@
 import { useGlobalStore } from '@/stores/global';
 import { healthApi } from '@lib/api';
+import type { ApiSession } from '@lib/api/src/request';
 import { App } from 'antd';
 import { useCallback } from 'react';
-import type { ChatItem } from './use_conversation_list';
 
-function useDeleteChat(options: { refresh: () => void }): { deleteChat: (chat: ChatItem) => void } {
+function useDeleteChat(options: { refresh: () => void }): {
+  deleteChat: (chat: ApiSession) => void;
+} {
   const { refresh } = options;
   const { modal, message } = App.useApp();
   const dashboard = useGlobalStore((state) => state.dashboard);
 
   const deleteChat = useCallback(
-    (chat: ChatItem) => {
+    (chat: ApiSession) => {
       modal.confirm({
         title: '删除对话',
         content: '确定删除该对话吗？',
