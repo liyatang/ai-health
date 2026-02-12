@@ -2,14 +2,14 @@
   touch-action: manipulation;
 }
 
-.c-message-user {
+.c-message-group {
   font-size: 16px;
   line-height: 1.7;
-}
 
-.c-message-ai {
-  .x-markdown.x-markdown-light {
-    --font-size: 16px;
-    line-height: 1.7;
+  &.c-message-ai {
+    .x-markdown.x-markdown-light {
+      --font-size: 16px;
+      line-height: 1.7;
+    }
   }
 }

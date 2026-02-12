@@ -2,11 +2,16 @@ import type { Message } from '@/stores/chat';
 import { useChatStore } from '@/stores/chat';
 import { Welcome } from '@ant-design/x';
 import { EnumChatMessageStatus, Markdown, Messages } from '@fe-free/ai';
-import { Copy } from '@fe-free/core';
 import { LoadingOutlined } from '@fe-free/icons';
 import { Avatar } from 'antd';
 import classNames from 'classnames';
 import { useCallback } from 'react';
+import {
+  MESSAGE_CONTENT_CLASS,
+  MESSAGE_GROUP_CLASS,
+  MessageToolBarAI,
+  MessageToolBarUser,
+} from './tools';
 
 function MessageWrap({
   className,
@@ -23,13 +28,14 @@ function MessageWrap({
     <div
       className={classNames(
         'w-[960px] mx-auto max-w-full flex flex-col group',
+        MESSAGE_GROUP_CLASS,
         {
           'items-end': role === 'user',
         },
         className,
       )}
     >
-      {children}
+      <div className={MESSAGE_CONTENT_CLASS}>{children}</div>
       {tool && (
         <div
           className={classNames('mt-1', {
@@ -49,7 +55,8 @@ function ChatMessages() {
   const handleRenderMessageOfAI = useCallback((props: { message: Message }) => {
     if (
       props.message.status === EnumChatMessageStatus.PENDING ||
-      (props.message.status === EnumChatMessageStatus.STREAMING && !props.message.ai?.data?.content)
+      (props.message.status === EnumChatMessageStatus.STREAMING &&
+        !props.message.ai?.data?.content)
     ) {
       return (
         <MessageWrap data-uuid={props.message.uuid} className="c-message-ai" role="ai">
@@ -65,11 +72,7 @@ function ChatMessages() {
         data-uuid={props.message.uuid}
         className="c-message-ai"
         role="ai"
-        tool={
-          <div>
-            <Copy showIcon value={props.message.ai?.data?.content ?? ''} />
-          </div>
-        }
+        tool={<MessageToolBarAI message={props.message} />}
       >
         <Markdown content={props.message.ai?.data?.content} />
       </MessageWrap>
@@ -82,13 +85,11 @@ function ChatMessages() {
         data-uuid={props.message.uuid}
         className="c-message-user"
         role="user"
-        tool={
-          <div>
-            <Copy showIcon value={props.message.user?.text ?? ''} />
-          </div>
-        }
+        tool={<MessageToolBarUser message={props.message} />}
       >
-        <div className="bg-primary text-white rounded-lg px-3 py-2">{props.message.user?.text}</div>
+        <div className="bg-primary text-white rounded-lg px-3 py-2">
+          {props.message.user?.text}
+        </div>
       </MessageWrap>
     );
   }, []);
