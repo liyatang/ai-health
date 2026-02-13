@@ -1,9 +1,15 @@
-import type { Message } from '@/stores/chat';
+import {
+  useChatStore,
+  useChatStoreComputed,
+  useSendChatMessage,
+  type Message,
+} from '@/stores/chat';
+import { EnumChatMessageStatus } from '@fe-free/ai';
 import { Copy } from '@fe-free/core';
-import { CameraOutlined, CopyOutlined } from '@fe-free/icons';
-import { App, Button } from 'antd';
+import { CameraOutlined, CopyOutlined, EditOutlined } from '@fe-free/icons';
+import { App, Button, Input, Modal } from 'antd';
 import html2canvas from 'html2canvas';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 export const MESSAGE_CONTENT_CLASS = 'c-message-content';
 export const MESSAGE_GROUP_CLASS = 'c-message-group';
@@ -125,7 +131,59 @@ function CopyButton({ value }: { value: string }) {
   );
 }
 
+function EditButton({ message }: { message: Message }) {
+  const [value, setValue] = useState('');
+  const [open, setOpen] = useState(false);
+
+  const messages = useChatStore((state) => state.messages);
+  const setMessages = useChatStore((state) => state.setMessages);
+
+  const { send } = useSendChatMessage({});
+
+  return (
+    <>
+      <Button
+        size="small"
+        icon={<EditOutlined className="!text-lg" />}
+        type="text"
+        onClick={() => {
+          setValue(message.ai?.data?.content ?? '');
+          setOpen(true);
+        }}
+      />
+      {open && (
+        <Modal
+          onCancel={() => setOpen(false)}
+          onOk={() => {
+            setOpen(false);
+
+            const index = messages.findIndex((m) => m.uuid === message.uuid);
+
+            if (index !== -1) {
+              // 移除当前和后面的消息
+              setMessages(messages.slice(0, index));
+              // 重新发送
+              send({ text: value });
+            }
+          }}
+        >
+          <Input.TextArea value={value} onChange={(e) => setValue(e.target.value)} />
+        </Modal>
+      )}
+    </>
+  );
+}
+
 export function MessageToolBarAI({ message }: { message: Message }) {
+  const { chatStatus } = useChatStoreComputed();
+
+  if (
+    chatStatus === EnumChatMessageStatus.PENDING ||
+    chatStatus === EnumChatMessageStatus.STREAMING
+  ) {
+    return null;
+  }
+
   return (
     <div className="flex items-center gap-2">
       <CopyButton value={message.ai?.data?.content ?? ''} />
@@ -135,10 +193,20 @@ export function MessageToolBarAI({ message }: { message: Message }) {
 }
 
 export function MessageToolBarUser({ message }: { message: Message }) {
+  const { chatStatus } = useChatStoreComputed();
+
+  if (
+    chatStatus === EnumChatMessageStatus.PENDING ||
+    chatStatus === EnumChatMessageStatus.STREAMING
+  ) {
+    return null;
+  }
+
   return (
     <div className="flex items-center gap-2">
       <CopyButton value={message.user?.text ?? ''} />
       <ScreenshotButton uuid={message.uuid} />
+      <EditButton message={message} />
     </div>
   );
 }

@@ -55,8 +55,7 @@ function ChatMessages() {
   const handleRenderMessageOfAI = useCallback((props: { message: Message }) => {
     if (
       props.message.status === EnumChatMessageStatus.PENDING ||
-      (props.message.status === EnumChatMessageStatus.STREAMING &&
-        !props.message.ai?.data?.content)
+      (props.message.status === EnumChatMessageStatus.STREAMING && !props.message.ai?.data?.content)
     ) {
       return (
         <MessageWrap data-uuid={props.message.uuid} className="c-message-ai" role="ai">
@@ -87,9 +86,7 @@ function ChatMessages() {
         role="user"
         tool={<MessageToolBarUser message={props.message} />}
       >
-        <div className="bg-primary text-white rounded-lg px-3 py-2">
-          {props.message.user?.text}
-        </div>
+        <div className="bg-primary text-white rounded-lg px-3 py-2">{props.message.user?.text}</div>
       </MessageWrap>
     );
   }, []);

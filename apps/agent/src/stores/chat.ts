@@ -53,7 +53,7 @@ function chatMessagesToApiChatMessages(messages: Message[]): ApiChatMessageReque
   return apiMessages;
 }
 
-function useSendChatMessage({ onChatIdChange }) {
+function useSendChatMessage({ onChatIdChange }: { onChatIdChange?: (chatId: number) => void }) {
   const messages = useChatStore((state) => state.messages);
   const contextData = useChatStore((state) => state.contextData);
   const addMessage = useChatStore((state) => state.addMessage);
