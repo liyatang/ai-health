@@ -35,7 +35,7 @@ function Item({ chat, refresh }: { chat: ApiChatSession; refresh: () => void }) 
       }}
     >
       <div className="flex-1 max-w-full">
-        <div className="truncate">{chat.title}</div>
+        <div className="line-clamp-2">{chat.title}</div>
         <div className="flex items-center gap-1">
           <div className="text-xs text-03">{dayjs(chat.updated_at).format('MM-DD HH:mm')}</div>
           {formName && (
