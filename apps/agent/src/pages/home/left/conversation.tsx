@@ -1,5 +1,6 @@
 import { useConversationStore, useConversationStoreComputed } from '@/stores/conversation';
 import { useGlobalStore } from '@/stores/global';
+import { PageLayout } from '@fe-free/core';
 import { MoreOutlined } from '@fe-free/icons';
 import type { ApiChatSession } from '@lib/api/src/request';
 import { Dropdown } from 'antd';
@@ -33,7 +34,7 @@ function Item({ chat, refresh }: { chat: ApiChatSession; refresh: () => void }) 
         setSearchParams({ chat_id: chat.id.toString() ?? '' });
       }}
     >
-      <div className="flex-1">
+      <div className="flex-1 max-w-full">
         <div className="truncate">{chat.title}</div>
         <div className="flex items-center gap-1">
           <div className="text-xs text-03">{dayjs(chat.updated_at).format('MM-DD HH:mm')}</div>
@@ -87,8 +88,7 @@ function Conversation() {
   }, []);
 
   return (
-    <div>
-      <div className="p-2 text-xs text-03">所有对话</div>
+    <PageLayout direction="vertical" start={<div className="p-2 text-xs text-03">所有对话</div>}>
       <div className="flex flex-col">
         {groupedConversations.map(({ key, list }) => (
           <div key={key}>
@@ -99,7 +99,7 @@ function Conversation() {
           </div>
         ))}
       </div>
-    </div>
+    </PageLayout>
   );
 }
 

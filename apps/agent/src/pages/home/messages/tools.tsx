@@ -126,7 +126,7 @@ function ScreenshotButton({ uuid }: { uuid: string }) {
 function CopyButton({ value }: { value: string }) {
   return (
     <Copy value={value}>
-      <Button size="small" icon={<CopyOutlined className="!text-lg" />} type="text" />
+      <Button size="small" icon={<CopyOutlined className="!text-base" />} type="text" />
     </Copy>
   );
 }
