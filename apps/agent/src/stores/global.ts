@@ -52,9 +52,9 @@ const useGlobalStore = create<GlobalState>()(
             set({
               userInfo: {
                 // @ts-ignore
-                id: iframe.contentWindow?.userId,
+                id: iframe.contentWindow?.phpUserId,
                 // @ts-ignore
-                name: iframe.contentWindow?.userName,
+                name: iframe.contentWindow?.phpUserName,
               },
               // @ts-ignore
               csrfToken: iframe.contentWindow?.csrfToken,

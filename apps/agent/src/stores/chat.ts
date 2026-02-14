@@ -59,6 +59,7 @@ function useSendChatMessage({ onChatIdChange }: { onChatIdChange?: (chatId: numb
   const addMessage = useChatStore((state) => state.addMessage);
   const updateMessage = useChatStore((state) => state.updateMessage);
   const csrfToken = useGlobalStore((state) => state.csrfToken);
+  const userInfo = useGlobalStore((state) => state.userInfo);
 
   const send = useCallback(
     async (value?: SenderProps['value']) => {
@@ -85,8 +86,13 @@ function useSendChatMessage({ onChatIdChange }: { onChatIdChange?: (chatId: numb
         messages: sendMessages,
         metadata: {
           code: EnumCodeType.Paid,
-          health_form_id: contextData?.health_form_id,
-          current_chat_id: contextData?.current_chat_id,
+          health_form_id: contextData?.health_form_id ?? '',
+          current_chat_id: contextData?.current_chat_id ?? '',
+          device_type: navigator.userAgent,
+          screen_width: window.innerWidth,
+          screen_height: window.innerHeight,
+          user_id: userInfo?.id ?? '',
+          user_name: userInfo?.name ?? '',
         },
       };
 
@@ -144,6 +150,8 @@ function useSendChatMessage({ onChatIdChange }: { onChatIdChange?: (chatId: numb
       messages,
       onChatIdChange,
       updateMessage,
+      userInfo?.id,
+      userInfo?.name,
     ],
   );
 

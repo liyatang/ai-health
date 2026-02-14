@@ -27,7 +27,7 @@ function MessageWrap({
   return (
     <div
       className={classNames(
-        'w-[960px] mx-auto max-w-full flex flex-col group',
+        'w-[960px] mx-auto max-w-full flex flex-col group px-2',
         MESSAGE_GROUP_CLASS,
         {
           'items-end': role === 'user',

@@ -147,12 +147,16 @@ function EditButton({ message }: { message: Message }) {
         icon={<EditOutlined className="!text-lg" />}
         type="text"
         onClick={() => {
-          setValue(message.ai?.data?.content ?? '');
+          setValue(message.user?.text ?? '');
           setOpen(true);
         }}
       />
       {open && (
         <Modal
+          title="编辑消息"
+          okText="发送"
+          cancelText="取消"
+          open={open}
           onCancel={() => setOpen(false)}
           onOk={() => {
             setOpen(false);
@@ -162,12 +166,20 @@ function EditButton({ message }: { message: Message }) {
             if (index !== -1) {
               // 移除当前和后面的消息
               setMessages(messages.slice(0, index));
-              // 重新发送
-              send({ text: value });
+              // 延迟，等 Send 获取到最新的 setMessages
+              setTimeout(() => {
+                // 重新发送
+                send({ text: value });
+              }, 100);
             }
           }}
+          width={960}
         >
-          <Input.TextArea value={value} onChange={(e) => setValue(e.target.value)} />
+          <Input.TextArea
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            autoSize={{ minRows: 5, maxRows: 10 }}
+          />
         </Modal>
       )}
     </>

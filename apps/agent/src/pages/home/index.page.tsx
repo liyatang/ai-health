@@ -134,9 +134,10 @@ function HomePage() {
 
   return (
     <PageLayout
-      className="bg-01 py-2 pr-2"
+      className="bg-01"
       start={<Left />}
-      childrenClassName="bg-white rounded-lg"
+      startClassName="border-r border-01"
+      childrenClassName="bg-white"
     >
       <PageLayout direction="vertical" start={<Header />} startClassName="border-b border-01">
         <WrapChat key={key} />
